@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        server side
+        <input type="text" id="messageInput" placeholder="Enter message" />
+        <button onclick="sendMessage()">send message</button>
+        <ul id="chatList"></ul>
+    </div>
+</body>
+<script>
+    const socket = new WebSocket("ws://localhost:3000");
+
+    const chatMessages = [];
+  
+    socket.addEventListener("open", (event) => {
+      socket.send("Hello Server!");
+    });
+  
+    socket.addEventListener("message", (event) => {
+      const message = event.data;
+      console.log("Message from server ", message);
+  
+      chatMessages.push(message);
+  
+      updateChatDisplay();
+    });
+  
+    const sendMessage = () => {
+      const inputMessage = document.getElementById("messageInput").value;
+      socket.send(inputMessage);
+
+      document.getElementById("messageInput").value = "";
+    }
+  
+    const updateChatDisplay = () => {
+  
+      const chatList = document.getElementById("chatList");
+  
+      chatList.innerHTML = "";
+ 
+      chatMessages.forEach((message) => {
+        const li = document.createElement("li");
+        li.textContent = message;
+        chatList.appendChild(li);
+      });
+    }
+  </script>
+</html>
